@@ -36,26 +36,12 @@ spec:
                   name: bookstack-secret
                   key: DB_PASSWORD
             - name: APP_URL
-              value: "https://knowledgebase.dome-marketplace-prd.org"
+              value: "https://knowledgebase.dome-marketplace.eu"
             - name: APP_KEY
               valueFrom:
                 secretKeyRef:
                   name: bookstack-secret
                   key: APP_KEY
-            - name: MAIL_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: bookstack-secret
-                  key: MAIL_USERNAME
-            - name: MAIL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: bookstack-secret
-                  key: MAIL_PASSWORD
-            - name: MAIL_HOST
-              value: "sandbox.smtp.mailtrap.io"
-            - name: MAIL_PORT
-              value: "2525"
 
             - name: AUTH_METHOD
               value: "oidc"
@@ -83,6 +69,26 @@ spec:
               value: "groups"
             - name: OIDC_REMOVE_FROM_GROUPS
               value: "true"
+              
+            - name: MAIL_DRIVER
+              value: "smtp"
+            - name: MAIL_FROM_NAME
+              value: "BookStack"
+            - name: MAIL_FROM
+              value: "customer-service@dome-marketplace.eu"
+            - name: MAIL_HOST
+              value: "smtp.ionos.de"
+            - name: MAIL_PORT
+              value: "587"
+            - name: MAIL_USERNAME
+              value: "customer-service@dome-marketplace.eu"
+            - name: MAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bookstack-secret
+                  key: MAIL_PASSWORD_SECRET
+            - name: MAIL_ENCRYPTION
+              value: "SSL"
 
           ports:
             - containerPort: 8080
