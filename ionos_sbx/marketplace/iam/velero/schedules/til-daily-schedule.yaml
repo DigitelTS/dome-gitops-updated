@@ -12,3 +12,4 @@ spec:
       matchLabels:
         app.kubernetes.io/name: mysql-til
     ttl: 720h0m0s  # 30-day retention
+    
