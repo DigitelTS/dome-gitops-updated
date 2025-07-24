@@ -10,7 +10,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: knowledgebase.dome-marketplace.eu
+  - host: knowledgebase.dome-marketplace-prd.org
     http:
       paths:
       - path: /
@@ -22,5 +22,5 @@ spec:
               number: 8080
   tls:
   - hosts:
-    - knowledgebase.dome-marketplace.eu
+    - knowledgebase.dome-marketplace-prd.org
     secretName: knowledgebase-tls-secret
