@@ -8,8 +8,12 @@ access-node:
     image:
       repository: in2workspace/in2-desmos-api
       # Overrides the image tag whose default is the chart appVersion.
-      tag: v1.0.0-snapshot
+      tag: v1.1.6
       pullPolicy: Always
+    readinessProbe:
+      failureThreshold: 10
+    livenessProbe:
+      failureThreshold: 10
     ingress:
       enabled: true
       className: nginx
@@ -29,11 +33,12 @@ access-node:
       ## profile (test == dev)
       profile: dev
       ## debug level
-      logLevel: INFO
+      logLevel:
+        app: DEBUG
       ## information about the access-node operator
       operator:
         # -- did of the organization running the node
-        organizationIdentifier: did:elsi:VATES-S9999999E
+        organizationIdentifier: did:key:zDnaev2NrT2aiJN7CE8hwMuahRJccCYLaWwCGyqDaB5C81FQQ
       ## connection information for the context broker
       broker:
         # -- provider of the broker
@@ -42,12 +47,6 @@ access-node:
         internalDomain: http://scorpio:9090
         # -- external address of the broker. Will be included in the hashlink and used by other access-nodes to retrieve the actual entities
         externalDomain: http://scorpio:9090
-      ## configuration of ngsi-ld entities to listen for
-      ngsiSubscription:
-        # -- local address of the blockchain-connectors notification endpoint for ngsi-ld events
-        notificationEndpoint: http://desmos:80/api/v1/notifications/broker
-        # -- a list of entity-types the connector is interested in
-        entityTypes: catalog,product-offering,category,individual,organization,product,service-specification,product-offering-price,resource-specification,product-specification
       ## configuration to connect to the dlt-adapter
       dltAdapter:
         # -- provider of the dlt-adapter component
@@ -56,14 +55,10 @@ access-node:
         internalDomain: http://dlt-adapter:8080
         # -- (external) address of the dlt-adapter
         externalDomain: http://dlt-adapter:8080
-        ## configuration of subscriptions at the blockchain
-      txSubscription:
-        # -- local address of the blockchain-connectors notification endpoint for dlt events
-        notificationEndpoint: http://desmos:80/api/v1/notifications/dlt
-        # -- a list of entity-types the connector is interested in
-        entityTypes: catalog,product-offering,category,individual,organization,product,service-specification,product-offering-price,resource-specification,product-specification
       # -- operator external domain
-      externalDomain: "https://desmos.dome-marketplace-sbx.org"
+      externalDomain:
+        protocol: "https"
+        domain: "desmos.dome-marketplace-sbx.org"
       externalAccessNodesUrls:
         enableCustomUrls: true
         customUrls: ""
@@ -73,27 +68,32 @@ access-node:
           # -- should an existing secret be used
           enabled: true
           # -- name of the secret
-          name: desmos-secret
+          name: access-node-secret
           # -- key to retrieve the password from
-          key: private-key
+          key: desmos-private-key
+      learCredentialMachineInBase64:
+        existingSecret:
+          enabled: true
+          name: access-node-secret
+          key: lear-credential-machine
     ## configuration of the database to be used by the blockchain-connector
     db:
       # -- host of the db
-      host: desmos-postgres
+      host: pg-75qkrjg6i4d7tlg2.postgresql.de-txl.ionos.com
       # -- port of the host of the db
       port: 5432
       # -- should be true if is an external service
-      externalService: false
+      externalService: true
       # -- name of the db
-      name: desmos
+      name: accessnode?ssl=true&sslmode=require
       # -- username to be used
-      username: postgres
+      username: desmosuser
       # -- existing secret to retrieve the db password
       existingSecret:
         # -- should an existing secret be used
         enabled: true
         # -- name of the secret
-        name: desmos-secret
+        name: access-node-secret
         # -- key to retrieve the password from
         key: desmos-db-password
 
@@ -106,52 +106,22 @@ access-node:
 
     existingSecret:
       enabled: true
-      name: desmos-secret
-      key: private-key
+      name: access-node-secret
+      key: dlt-private-key
     env:
       DEBUG: "*"
       RPC_ADDRESS: "https://red-t.alastria.io/v0/9461d9f4292b41230527d57ee90652a6"
-      ISS: "0x43b27fef24cfe8a0b797ed8a36de2884f9963c0c2a0da640e3ec7ad6cd0c493d"
+      ISS: "0x6a2f383855cba0fff292455ccd908c4a08d6c07f5ef139b5afcef4cf62d4798b"
 
   ## configuration of postgres to be used for the blockchain-connector - see https://github.com/bitnami/charts/tree/main/bitnami/postgresql for details
   postgresql:
     # -- should the postgresql deployment be enabled
-    enabled: true
-    # -- overrides the generated name, provides stable service names - this should be avoided if multiple instances are available in the same namespace
-    fullnameOverride: desmos-postgres
-    # -- overrides the generated name, provides stable service names - this should be avoided if multiple instances are available in the same namespace
-    nameOverride: desmos-postgres
-    ## auth configuration for the database
-    auth:
-      # -- username to be used
-      username: postgres
-      # -- should the default postgres user be enabled
-      enablePostgresUser: true
-      # -- existing secret
-      existingSecret: desmos-secret
-      secretKeys:
-        adminPasswordKey: desmos-db-password
-        userPasswordKey: desmos-db-password
-    ## configuration of the postgres primary replica
-    primary:
-      ## provide db initialization
-      initdb:
-        ## provide scripts for initialization
-        scripts:
-          # -- create the database as expected by the blockchain-connector
-          create.sh: |
-            psql postgresql://postgres:${POSTGRES_PASSWORD}@localhost:5432 -c "CREATE DATABASE desmos;"  
+    enabled: false
 
   ## configuration of the context-broker - see https://github.com/FIWARE/helm-charts/tree/main/charts/scorpio-broker-aaio for details
   scorpio:
     # -- should scorpio be enabled
     enabled: true
-    ## configuration of the image to be used
-    image:
-      # -- repository to be used - resource friendly all-in-one-runner without kafka
-      repository: scorpiobroker/all-in-one-runner
-      # -- tag of the image to be used - latest java image without kafka
-      tag: java-4.1.10
     ## configuration of the database to be used by broker
     db:
       # -- host of the db
@@ -163,7 +133,7 @@ access-node:
         # -- should an existing secret be used
         enabled: true
         # -- name of the secret
-        name: desmos-secret
+        name: access-node-secret
         # -- key to retrieve the password from
         key: scorpio-db-password
     ## configuration of the readiness probe
@@ -201,7 +171,7 @@ access-node:
       # -- should the default postgres user be enabled
       enablePostgresUser: true
       # -- existing secret
-      existingSecret: desmos-secret
+      existingSecret: access-node-secret
       secretKeys:
         adminPasswordKey: scorpio-db-password
         userPasswordKey: scorpio-db-password
@@ -223,55 +193,91 @@ access-node:
     # -- should tm-forum-api be enabled
     enabled: true
 
+    defaultConfig:
+      image:
+        tag: 1.3.5
+      additionalEnvVars: 
+      - name: MAPPING_STRICT_RELATIONSHIPS
+        value: "false"
+      - name: API_EXTENSION_ENABLED
+        value: "true"
+
+    ingress:
+      enabled: true
+      className: nginx
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-sbx-issuer
+      hosts:
+        - host: tmf.dome-marketplace-sbx.org
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - tmf.dome-marketplace-sbx.org
+          secretName: tm-forum-api-tls-secret
+
     apis:
     - name: party-catalog
       image: tmforum-party-catalog
-      basePath: /
+      basePath: /tmf-api/party/v4
 
     - name: customer-bill-management
       image: tmforum-customer-bill-management
-      basePath: /
+      basePath: /tmf-api/customerBillManagement/v4
 
     - name: customer-management
       image: tmforum-customer-management
-      basePath: /
+      basePath: /tmf-api/customerManagement/v4
 
     - name: product-catalog
       image: tmforum-product-catalog
-      basePath: /
+      basePath: /tmf-api/productCatalogManagement/v4
 
     - name: product-inventory
       image: tmforum-product-inventory
-      basePath: /
+      basePath: /tmf-api/productInventory/v4
 
     - name: product-ordering-management
       image: tmforum-product-ordering-management
-      basePath: /
+      basePath: /tmf-api/productOrderingManagement/v4
 
     - name: resource-catalog
       image: tmforum-resource-catalog
-      basePath: /
+      basePath: /tmf-api/resourceCatalog/v4
 
     - name: resource-function-activation
       image: tmforum-resource-function-activation
-      basePath: /
+      basePath: /tmf-api/resourceFunctionActivation/v4
 
     - name: resource-inventory
       image: tmforum-resource-inventory
-      basePath: /
+      basePath: /tmf-api/resourceInventoryManagement/v4
 
     - name: service-catalog
       image: tmforum-service-catalog
-      basePath: /
+      basePath: /tmf-api/serviceCatalogManagement/v4
+
+    - name: service-inventory
+      image: tmforum-service-inventory
+      basePath: /tmf-api/serviceInventory/v4
 
     - name: account
       image: tmforum-account
-      basePath: /
+      basePath: /tmf-api/accountManagement/v4
 
     - name: agreement
       image: tmforum-agreement
-      basePath: /
+      basePath: /tmf-api/agreementManagement/v4
+
+    - name: party-role
+      image: tmforum-party-role
+      basePath: /tmf-api/partyRoleManagement/v4
 
     - name: usage-management
       image: tmforum-usage-management
-      basePath: /
+      basePath: /tmf-api/usageManagement/v4
+
+    - name: quote
+      image: tmforum-quote
+      basePath: /tmf-api/quote/v4
