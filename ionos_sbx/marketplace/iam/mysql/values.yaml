@@ -1,5 +1,4 @@
 mysql:
-  namespace: til
   fullnameOverride: mysql-til
   auth:
     existingSecret: mysql-secret
@@ -7,10 +6,3 @@ mysql:
     create.sql: |
       CREATE DATABASE til;
       CREATE DATABASE ccs;
-      
-  primary:
-    podAnnotations:
-      backup.velero.io/backup-volumes: data
-
-  labels:
-    app.kubernetes.io/name: mysql-til    

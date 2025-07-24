@@ -34,8 +34,3 @@ keycloak:
     auth:
       database: keycloak
       existingSecret: keycloak-secret
-
-    # pod annontation for Velero backup
-    primary:
-      podAnnotations:
-        backup.velero.io/backup-volumes: data
