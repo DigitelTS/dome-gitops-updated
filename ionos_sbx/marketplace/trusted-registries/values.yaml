@@ -25,22 +25,22 @@ api:
     AUTH_MANDATORS: VATES-B60645900;VATES-B47447560
   envSecrets:
     DB_NAME:
-      secretName: database-secret
+      secretName: api-secret
       secretKey: POSTGRES_DB
     DB_USER:
-      secretName: database-secret
+      secretName: api-secret
       secretKey: POSTGRES_USER
     DB_PASS:
-      secretName: database-secret
+      secretName: api-secret
       secretKey: POSTGRES_PASSWORD
     ETH_ADDRESS:
-      secretName: blockchain-secret
+      secretName: api-secret
       secretKey: ADDRESS
     ETH_KEY:
-      secretName: blockchain-secret
+      secretName: api-secret
       secretKey: KEY
     ETH_CONTRACT:
-      secretName: blockchain-secret
+      secretName: api-secret
       secretKey: CONTRACT
 
 portal:
