@@ -5,7 +5,7 @@ version: 1.0.0
 dependencies:
   - name: portal
     version: 1.0.0
-    # repository: Change this
+    repository: https://dome-marketplace.github.io/helm-charts/trust-framework
   - name: api
     version: 1.0.0
-    # repository: Change this
+    repository: https://dome-marketplace.github.io/helm-charts/trust-framewok
