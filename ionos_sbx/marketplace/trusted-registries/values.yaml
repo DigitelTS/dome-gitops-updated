@@ -9,10 +9,21 @@ api:
     port: 8080
   ingress:
     enabled: true
-    host: api.tir.infra.dome.dts.com
-    paths: 
-      - /v4
-      - /
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-sbx-issuer
+    hosts:
+      - host: api.tr.dome-marketplace-sbx.org
+        paths:
+          - path: /
+            pathType: Prefix
+          - path: /v4
+            pathType: Prefix
+    tls:
+      - hosts:
+          - verifier.dome-marketplace-sbx.org
+        secretName: verifier-tls-sec
+
   env:
     PORT: 8080
     DB_PORT: 5432
@@ -54,8 +65,18 @@ portal:
     port: 3000
   ingress:
     enabled: true
-    host: portal.tir.infra.dome.dts.com
-    path: /
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-sbx-issuer
+    hosts:
+      - host: portal.tr.dome-marketplace-sbx.org
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - hosts:
+          - verifier.dome-marketplace-sbx.org
+        secretName: verifier-tls-sec
   env:
     NUXT_PUBLIC_API_MAIN_URI: /v4
     NUXT_PUBLIC_API_HEALTH: /health
