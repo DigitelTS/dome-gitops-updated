@@ -28,10 +28,10 @@ api:
     PORT: 8080
     DB_PORT: 5432
     DB_DRIVER: org.postgresql.Driver
-    ETH_PROVIDER: http://some.blockchain.rpc.dome.com
-    AUTH_ISSUER: http://some.idp.endpoint.rpc.dome.com
-    HOST_URL: http://api.infra.dome.dts.com
-    API_URL: http://api.infra.dome.dts.com/v4
+    ETH_PROVIDER: https://red-t.alastria.io
+    AUTH_ISSUER: http://verifier.dome-marketplace-sbx.org
+    HOST_URL: http://trust-framework-api.dome-marketplace-sbx.org
+    API_URL: http://trust-framework-api.dome-marketplace-sbx.org/v4
     DB_URL: jbdc:postgresql://tir-database
     AUTH_MANDATORS: VATES-B60645900;VATES-B47447560
   envSecrets:
@@ -81,9 +81,9 @@ portal:
     NUXT_PUBLIC_API_MAIN_URI: /v4
     NUXT_PUBLIC_API_HEALTH: /health
     NUXT_PUBLIC_CLIENT_ID: tir_portal_client_id
-    NUXT_PUBLIC_API_HOST: http://api.infra.dome.dts.com
-    NUXT_PUBLIC_AUTH_SERVER: http://some.verifier.dome.com
-    NUXT_PUBLIC_TOKEN_SERVER: http://some.verifier.dome.com
+    NUXT_PUBLIC_API_HOST: http://trust-framework-api.dome-marketplace-sbx.org
+    NUXT_PUBLIC_AUTH_SERVER: http://verifier.dome-marketplace-sbx.org
+    NUXT_PUBLIC_TOKEN_SERVER: http://verifier.dome-marketplace-sbx.org
     NUXT_PUBLIC_CODE_LENGTH: 64
     NUXT_PUBLIC_CODE_ALGO: SHA-256
     NUXT_PUBLIC_STATE_LENGTH: 16
