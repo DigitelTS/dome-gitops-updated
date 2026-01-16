@@ -13,7 +13,7 @@ api:
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt-sbx-issuer
     hosts:
-      - host: api.tr.dome-marketplace-sbx.org
+      - host: trust-framework-api.dome-marketplace-sbx.org
         paths:
           - path: /
             pathType: Prefix
@@ -69,7 +69,7 @@ portal:
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt-sbx-issuer
     hosts:
-      - host: portal.tr.dome-marketplace-sbx.org
+      - host: trust-framework.dome-marketplace-sbx.org
         paths:
           - path: /
             pathType: Prefix
