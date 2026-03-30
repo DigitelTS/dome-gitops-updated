@@ -1,0 +1,92 @@
+api:
+  replicaCount: 1
+  image:
+    repository: tir-api
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8080
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-sbx-issuer
+    hosts:
+      - host: trust-framework-api.dome-marketplace-sbx.org
+        paths:
+          - path: /
+            pathType: Prefix
+          - path: /v4
+            pathType: Prefix
+    tls:
+      - hosts:
+          - verifier.dome-marketplace-sbx.org
+        secretName: verifier-tls-sec
+
+  env:
+    PORT: 8080
+    DB_PORT: 5432
+    DB_DRIVER: org.postgresql.Driver
+    ETH_PROVIDER: https://red-t.alastria.io
+    AUTH_ISSUER: https://verifier.dome-marketplace-sbx.org
+    HOST_URL: https://trust-framework-api.dome-marketplace-sbx.org
+    API_URL: https://trust-framework-api.dome-marketplace-sbx.org/v4
+    DB_URL: jbdc:postgresql://tir-database
+    AUTH_MANDATORS: VATES-B60645900;VATES-B47447560
+  envSecrets:
+    DB_NAME:
+      secretName: api-secret
+      secretKey: POSTGRES_DB
+    DB_USER:
+      secretName: api-secret
+      secretKey: POSTGRES_USER
+    DB_PASS:
+      secretName: api-secret
+      secretKey: POSTGRES_PASSWORD
+    ETH_ADDRESS:
+      secretName: api-secret
+      secretKey: ADDRESS
+    ETH_KEY:
+      secretName: api-secret
+      secretKey: KEY
+    ETH_CONTRACT:
+      secretName: api-secret
+      secretKey: CONTRACT
+
+portal:
+  replicaCount: 1
+  image:
+    repository: tir-portal
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 3000
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-sbx-issuer
+    hosts:
+      - host: trust-framework.dome-marketplace-sbx.org
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - hosts:
+          - verifier.dome-marketplace-sbx.org
+        secretName: verifier-tls-sec
+  env:
+    NUXT_PUBLIC_API_MAIN_URI: /v4
+    NUXT_PUBLIC_API_HEALTH: /health
+    NUXT_PUBLIC_CLIENT_ID: tir_portal_client_id
+    NUXT_PUBLIC_API_HOST: https://trust-framework-api.dome-marketplace-sbx.org
+    NUXT_PUBLIC_AUTH_SERVER: https://verifier.dome-marketplace-sbx.org
+    NUXT_PUBLIC_TOKEN_SERVER: https://verifier.dome-marketplace-sbx.org
+    NUXT_PUBLIC_CODE_LENGTH: 64
+    NUXT_PUBLIC_CODE_ALGO: SHA-256
+    NUXT_PUBLIC_STATE_LENGTH: 16
+    NUXT_PUBLIC_CHALLENGE_METHOD: S256
+    NODE_ENV: development
+    
